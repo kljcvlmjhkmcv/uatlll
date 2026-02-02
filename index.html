@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en" class="h-full scroll-smooth" dir="ltr">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ST Calculators</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      background: linear-gradient(135deg, #0f0f1e 0%, #1a1a3e 50%, #0f0f1e 100%);
+      font-family: 'Poppins', sans-serif;
+      min-height: 100%;
+    }
+
+    .animated-bg {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      pointer-events: none;
+      border-radius: 50%;
+    }
+
+    @keyframes float {
+      0%, 100% { 
+        transform: translateY(0px) translateX(0px);
+        opacity: 0.3;
+      }
+      50% { 
+        transform: translateY(-30px) translateX(15px);
+        opacity: 0.6;
+      }
+    }
+
+    .particle {
+      animation: float 8s infinite ease-in-out;
+    }
+
+    .particle:nth-child(1) { animation-delay: 0s; }
+    .particle:nth-child(2) { animation-delay: 2.5s; }
+    .particle:nth-child(3) { animation-delay: 5s; }
+    .particle:nth-child(4) { animation-delay: 1.2s; }
+    .particle:nth-child(5) { animation-delay: 3.7s; }
+
+    .content {
+      position: relative;
+      z-index: 10;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-in-up {
+      animation: fadeInUp 0.6s ease-out forwards;
+      opacity: 0;
+    }
+
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.25s; }
+    .delay-3 { animation-delay: 0.4s; }
+
+    /* Elegant Calculator Card */
+    .calc-card {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.05) 100%);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .calc-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s;
+      z-index: 1;
+    }
+
+    .calc-card:hover::before {
+      left: 100%;
+    }
+
+    .calc-card:hover {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.12) 0%, rgba(118, 75, 162, 0.08) 100%);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+    }
+
+    .calc-card:active {
+      transform: translateY(-4px);
+    }
+
+    .calc-card-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      height: 100%;
+      min-height: 200px;
+    }
+
+    @media (max-width: 640px) {
+      .calc-card-content {
+        padding: 1.5rem 1rem;
+        min-height: 160px;
+      }
+    }
+
+    .calc-icon {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.2) 100%);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    @media (max-width: 640px) {
+      .calc-icon {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 0.75rem;
+      }
+    }
+
+    .calc-card:hover .calc-icon {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.5) 0%, rgba(118, 75, 162, 0.3) 100%);
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    .calc-icon svg {
+      width: 32px;
+      height: 32px;
+      color: #667eea;
+      stroke-width: 2;
+    }
+
+    @media (max-width: 640px) {
+      .calc-icon svg {
+        width: 26px;
+        height: 26px;
+      }
+    }
+
+    .calc-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.5px;
+    }
+
+    @media (max-width: 640px) {
+      .calc-title {
+        font-size: 1.25rem;
+      }
+    }
+
+    .calc-subtitle {
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 400;
+      letter-spacing: 0.3px;
+    }
+
+    @media (max-width: 640px) {
+      .calc-subtitle {
+        font-size: 0.85rem;
+      }
+    }
+
+    .calculator-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+      width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .calculator-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .calculator-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+    }
+
+    .header-title {
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: -2px;
+    }
+
+    @media (max-width: 768px) {
+      .header-title {
+        font-size: 2.5rem;
+        letter-spacing: -1px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .header-title {
+        font-size: 2rem;
+        letter-spacing: -0.5px;
+      }
+    }
+
+    .header-subtitle {
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 400;
+      letter-spacing: 0.3px;
+    }
+
+    @media (max-width: 640px) {
+      .header-subtitle {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full"><!-- Animated Background -->
+  <div class="animated-bg">
+   <div class="particle" style="width: 280px; height: 280px; background: radial-gradient(circle, rgba(102, 126, 234, 0.15) 0%, transparent 70%); top: 5%; left: 5%;"></div>
+   <div class="particle" style="width: 220px; height: 220px; background: radial-gradient(circle, rgba(118, 75, 162, 0.12) 0%, transparent 70%); top: 65%; right: 10%;"></div>
+   <div class="particle" style="width: 250px; height: 250px; background: radial-gradient(circle, rgba(240, 147, 251, 0.1) 0%, transparent 70%); bottom: 5%; left: 15%;"></div>
+   <div class="particle" style="width: 180px; height: 180px; background: radial-gradient(circle, rgba(102, 126, 234, 0.12) 0%, transparent 70%); top: 35%; right: 5%;"></div>
+   <div class="particle" style="width: 210px; height: 210px; background: radial-gradient(circle, rgba(118, 75, 162, 0.1) 0%, transparent 70%); bottom: 25%; right: 20%;"></div>
+  </div><!-- Main Content -->
+  <div class="content min-h-full w-full flex flex-col">
+   <div class="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-12 sm:py-16">
+    <div class="w-full max-w-5xl mx-auto"><!-- Header Section -->
+     <header class="text-center mb-12 sm:mb-16 fade-in-up delay-1">
+      <h1 id="main-title" class="header-title gradient-text mb-4 sm:mb-5">ST Calculators</h1>
+      <p id="description" class="header-subtitle max-w-2xl mx-auto">Calculate your GPA accurately with a clean and user-friendly interface</p>
+     </header><!-- Calculator Cards -->
+     <div id="calculators-container" class="calculator-grid fade-in-up delay-2 mb-12 sm:mb-16"><!-- Cards generated by JavaScript -->
+     </div>
+    </div>
+   </div><!-- Footer -->
+   <footer class="content px-4 sm:px-6 py-8 sm:py-10 border-t border-white/10 fade-in-up delay-3">
+    <div class="max-w-5xl mx-auto text-center">
+     <p id="footer-text" class="text-gray-400 text-sm sm:text-base mb-3">Project by: Khalil Doua</p>
+     <p class="text-gray-500 text-xs sm:text-sm mb-4 leading-relaxed">Found a bug or issue? <a href="https://t.me/KhqLiL" target="_blank" rel="noopener noreferrer" class="text-purple-400 hover:text-purple-300 transition-colors font-semibold"> Contact us on Telegram </a></p><a href="https://t.me/KhqLiL" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors text-xs sm:text-sm font-medium">
+      <svg class="w-4 h-4" viewbox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
+      </svg><span id="telegram-handle">@KhqLiL</span> </a>
+    </div>
+   </footer>
+  </div>
+  <script>
+    // Easily add more specializations here
+    const calculators = [
+      {
+        id: 'st-ing',
+        title: 'ST ING',
+        subtitle: 'Engineering Track',
+        url: './st-ing/',
+        icon: 'calculator'
+      },
+      {
+        id: 'st-lmd',
+        title: 'ST LMD',
+        subtitle: 'LMD Program',
+        url: './st-lmd/',
+        icon: 'calculator'
+      }
+      // Add more like:
+      // { id: 'st-other', title: 'ST OTHER', subtitle: 'Other Track', url: './st-other/', icon: 'calculator' }
+    ];
+
+    function getCalculatorIcon(type) {
+      return `
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+        </svg>
+      `;
+    }
+
+    function renderCalculators() {
+      const container = document.getElementById('calculators-container');
+      container.innerHTML = '';
+
+      calculators.forEach((calc, index) => {
+        const link = document.createElement('a');
+        link.href = calc.url;
+        link.className = 'calc-card fade-in-up';
+        link.style.animationDelay = `${0.5 + index * 0.15}s`;
+
+        link.innerHTML = `
+          <div class="calc-card-content">
+            <div class="calc-icon">
+              ${getCalculatorIcon(calc.icon)}
+            </div>
+            <h2 class="calc-title">${calc.title}</h2>
+            <p class="calc-subtitle">${calc.subtitle}</p>
+          </div>
+        `;
+
+        container.appendChild(link);
+      });
+    }
+
+    const defaultConfig = {
+      main_title: 'ST Calculators',
+      description: 'Calculate your GPA accurately with a clean and user-friendly interface',
+      footer_text: 'Project by: Khalil Doua',
+      telegram_handle: '@KhqLiL'
+    };
+
+    async function onConfigChange(config) {
+      const mainTitle = document.getElementById('main-title');
+      const description = document.getElementById('description');
+      const footerText = document.getElementById('footer-text');
+      const telegramHandle = document.getElementById('telegram-handle');
+
+      if (mainTitle) mainTitle.textContent = config.main_title || defaultConfig.main_title;
+      if (description) description.textContent = config.description || defaultConfig.description;
+      if (footerText) footerText.textContent = config.footer_text || defaultConfig.footer_text;
+      if (telegramHandle) telegramHandle.textContent = config.telegram_handle || defaultConfig.telegram_handle;
+    }
+
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [],
+        borderables: [],
+        fontEditable: undefined,
+        fontSizeable: undefined
+      };
+    }
+
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ['main_title', config.main_title || defaultConfig.main_title],
+        ['description', config.description || defaultConfig.description],
+        ['footer_text', config.footer_text || defaultConfig.footer_text],
+        ['telegram_handle', config.telegram_handle || defaultConfig.telegram_handle]
+      ]);
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+
+    // Initialize on load
+    renderCalculators();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c7c2242229ba964',t:'MTc3MDA2MDk0OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
